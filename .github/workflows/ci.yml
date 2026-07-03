@@ -1,0 +1,19 @@
+name: CI
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  test:
+    name: test
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run package tests (macOS)
+        run: swift test
+      - name: Compile check for iOS (no simulator boot)
+        run: >
+          xcodebuild -scheme SwKeyboard
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath .build/dd build
