@@ -24,6 +24,18 @@ final class SwKeyboardTests: XCTestCase {
     }
 
     @MainActor
+    func testDismissalVetoedOnTextInteractionChrome() {
+        // Selection handles / cursor / loupe are private UIKit classes; the
+        // veto matches on type-name fragments, so stand-ins verify the walk.
+        final class UITextSelectionGrabberStub: UIView {}
+        final class UIStandardTextCursorViewStub: UIView {}
+        final class UITextLoupeStub: UIView {}
+        XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: UITextSelectionGrabberStub()))
+        XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: UIStandardTextCursorViewStub()))
+        XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: UITextLoupeStub()))
+    }
+
+    @MainActor
     func testDismissalAllowedOnPlainViews() {
         XCTAssertTrue(KeyboardDismissal._shouldDismiss(forTouchOn: UIView()))
         XCTAssertTrue(KeyboardDismissal._shouldDismiss(forTouchOn: nil))

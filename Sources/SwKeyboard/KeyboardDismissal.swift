@@ -69,15 +69,24 @@ public enum KeyboardDismissal {
             Self.shouldDismiss(forTouchOn: touch.view)
         }
 
-        /// Internal for tests: walk the view's ancestry; any text input,
-        /// edit-menu, callout-bar, or keyboard view vetoes dismissal.
+        /// UIKit-private view-type fragments that veto dismissal. Selection
+        /// grabbers, the cursor, and the loupe are NOT descendants of the
+        /// text view — without these, tapping a selection handle resigned
+        /// first responder and collapsed the selection (double-tap-select
+        /// then drag-handles was broken).
+        private static let vetoFragments = [
+            "EditMenu", "CalloutBar", "Keyboard",
+            "TextSelection", "Grabber", "Cursor", "Loupe", "Magnifier", "TextRange",
+        ]
+
+        /// Internal for tests: walk the view's ancestry; any text input or
+        /// text-interaction chrome vetoes dismissal.
         static func shouldDismiss(forTouchOn view: UIView?) -> Bool {
             var v = view
             while let current = v {
                 if current is UITextView || current is UITextField { return false }
                 let typeName = String(describing: type(of: current))
-                if typeName.contains("EditMenu") || typeName.contains("CalloutBar")
-                    || typeName.contains("Keyboard") { return false }
+                if vetoFragments.contains(where: { typeName.contains($0) }) { return false }
                 v = current.superview
             }
             return true
