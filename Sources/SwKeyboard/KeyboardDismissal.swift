@@ -25,15 +25,26 @@ public enum KeyboardDismissal {
     private static let coordinator = Coordinator()
 
     /// Attach the tap-outside recognizer to the key window. Safe to call
-    /// repeatedly; installs once per window.
+    /// repeatedly (e.g. from `.onAppear` AND a `scenePhase == .active`
+    /// handler) — installation is idempotent per window.
+    ///
+    /// Retries briefly because on cold launch `.onAppear` can fire before
+    /// the scene reports `.foregroundActive`; a single failed lookup used
+    /// to give up silently and never install the recognizer at all.
     @MainActor
-    public static func installTapOutsideDismissal() {
+    public static func installTapOutsideDismissal(attemptsRemaining: Int = 10) {
         DispatchQueue.main.async {
             guard
                 let scene = UIApplication.shared.connectedScenes
                     .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
                 let window = scene.windows.first(where: { $0.isKeyWindow }) ?? scene.windows.first
-            else { return }
+            else {
+                guard attemptsRemaining > 0 else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    installTapOutsideDismissal(attemptsRemaining: attemptsRemaining - 1)
+                }
+                return
+            }
             coordinator.install(in: window)
         }
     }
