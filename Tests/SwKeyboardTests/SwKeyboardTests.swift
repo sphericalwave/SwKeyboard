@@ -8,6 +8,21 @@ final class SwKeyboardTests: XCTestCase {
         _ = GrowingTextEditor(text: .constant("hello"), prompt: "Notes", lines: 2...6)
     }
 
+    func testPlainKeyboardModifierComposes() {
+        _ = TextField("Tag", text: .constant("")).plainKeyboard()
+    }
+
+    func testScrollDismissModifierComposes() {
+        _ = ScrollView { Text("content") }.dismissesKeyboardOnScroll()
+    }
+
+    #if os(iOS)
+    @MainActor
+    func testStandardKeyboardBehaviorComposes() {
+        _ = Text("root").standardKeyboardBehavior()
+    }
+    #endif
+
     #if os(iOS)
     @MainActor
     func testDismissalVetoedOnTextInputs() {
