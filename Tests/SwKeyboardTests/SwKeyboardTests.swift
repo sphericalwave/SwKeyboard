@@ -24,15 +24,26 @@ final class SwKeyboardTests: XCTestCase {
     }
 
     @MainActor
-    func testDismissalVetoedOnTextInteractionChrome() {
-        // Selection handles / cursor / loupe are private UIKit classes; the
-        // veto matches on type-name fragments, so stand-ins verify the walk.
-        final class UITextSelectionGrabberStub: UIView {}
-        final class UIStandardTextCursorViewStub: UIView {}
-        final class UITextLoupeStub: UIView {}
-        XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: UITextSelectionGrabberStub()))
-        XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: UIStandardTextCursorViewStub()))
-        XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: UITextLoupeStub()))
+    func testFragmentVetoOnlyAppliesToUIKitClasses() {
+        // App/SwiftUI classes whose names contain veto words must NOT veto —
+        // SwiftUI hosting views embed generic payloads full of words like
+        // "Keyboard", and matching them killed tap-outside dismissal.
+        final class MyKeyboardAvoidingContainer: UIView {}
+        final class CursorHighlightView: UIView {}
+        XCTAssertTrue(KeyboardDismissal._shouldDismiss(forTouchOn: MyKeyboardAvoidingContainer()))
+        XCTAssertTrue(KeyboardDismissal._shouldDismiss(forTouchOn: CursorHighlightView()))
+        XCTAssertFalse(KeyboardDismissal._isVetoedChrome(MyKeyboardAvoidingContainer()))
+    }
+
+    @MainActor
+    func testRealUIKitTextChromeIsVetoed() {
+        // Instantiate actual UIKit-private selection chrome where possible;
+        // skip gracefully if the class name changes in a future OS.
+        for name in ["UITextRangeView", "UICalloutBar"] {
+            guard let cls = NSClassFromString(name) as? UIView.Type else { continue }
+            let view = cls.init()
+            XCTAssertFalse(KeyboardDismissal._shouldDismiss(forTouchOn: view), name)
+        }
     }
 
     @MainActor

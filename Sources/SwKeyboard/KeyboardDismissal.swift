@@ -79,23 +79,39 @@ public enum KeyboardDismissal {
             "TextSelection", "Grabber", "Cursor", "Loupe", "Magnifier", "TextRange",
         ]
 
+        private static let uikitBundle = Bundle(for: UIView.self)
+
+        /// Fragment matching applies ONLY to UIKit-framework classes. SwiftUI
+        /// hosting/wrapper views embed their generic payload in the type name
+        /// and routinely contain words like "Keyboard" — matching those vetoed
+        /// every tap and broke tap-outside dismissal entirely. The text
+        /// chrome we must protect all lives in UIKitCore.
+        static func isVetoedChrome(_ view: UIView) -> Bool {
+            guard Bundle(for: type(of: view)) === uikitBundle else { return false }
+            let typeName = String(describing: type(of: view))
+            return vetoFragments.contains { typeName.contains($0) }
+        }
+
         /// Internal for tests: walk the view's ancestry; any text input or
-        /// text-interaction chrome vetoes dismissal.
+        /// UIKit text-interaction chrome vetoes dismissal.
         static func shouldDismiss(forTouchOn view: UIView?) -> Bool {
             var v = view
             while let current = v {
                 if current is UITextView || current is UITextField { return false }
-                let typeName = String(describing: type(of: current))
-                if vetoFragments.contains(where: { typeName.contains($0) }) { return false }
+                if isVetoedChrome(current) { return false }
                 v = current.superview
             }
             return true
         }
     }
 
-    /// Test seam for the veto logic.
+    /// Test seams for the veto logic.
     static func _shouldDismiss(forTouchOn view: UIView?) -> Bool {
         Coordinator.shouldDismiss(forTouchOn: view)
+    }
+
+    static func _isVetoedChrome(_ view: UIView) -> Bool {
+        Coordinator.isVetoedChrome(view)
     }
 }
 #endif
