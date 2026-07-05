@@ -29,5 +29,9 @@ public struct GrowingTextEditor: View {
     public var body: some View {
         TextField(prompt, text: $text, axis: .vertical)
             .lineLimit(lineRange.lowerBound...lineRange.upperBound)
+            // Inside a Form/List row, the row proposes a fixed height and the
+            // field otherwise renders at that proposal instead of its true
+            // content height — fixedSize forces it to hug the actual text.
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
