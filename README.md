@@ -4,6 +4,14 @@ Keyboard handling patterns for SwiftUI: reliable tap-outside-to-dismiss, a growi
 multiline text editor with correct caret tracking, and app-wide scroll-to-dismiss
 defaults.
 
+## Components
+
+<!-- SCREENSHOTS:START -->
+| Component | Preview |
+| --- | --- |
+| `GrowingTextEditor` | ![GrowingTextEditor](Docs/img/growing-text-editor.png) |
+<!-- SCREENSHOTS:END -->
+
 ## Requirements
 
 - iOS 17+ / macOS 14+
