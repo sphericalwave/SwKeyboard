@@ -35,3 +35,14 @@ public struct GrowingTextEditor: View {
             .fixedSize(horizontal: false, vertical: true)
     }
 }
+
+#if DEBUG
+#Preview("GrowingTextEditor") {
+    Form {
+        GrowingTextEditor(
+            text: .constant("A few lines of sample notes.\nThe field grows to hug its content."),
+            prompt: "Notes"
+        )
+    }
+}
+#endif
