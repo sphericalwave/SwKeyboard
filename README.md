@@ -10,6 +10,7 @@ defaults.
 | Component | Preview |
 | --- | --- |
 | `GrowingTextEditor` | ![GrowingTextEditor](Docs/img/growing-text-editor.png) |
+| `NumericTextField` | ![NumericTextField](Docs/img/numeric-text-field.png) |
 <!-- SCREENSHOTS:END -->
 
 ## Requirements
