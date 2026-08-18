@@ -16,6 +16,28 @@ final class SwKeyboardTests: XCTestCase {
         _ = ScrollView { Text("content") }.dismissesKeyboardOnScroll()
     }
 
+    func testNumericTextFieldInstantiates() {
+        _ = NumericTextField("1", value: .constant(nil))
+        _ = NumericTextField("1", value: .constant(2.5), allowsFraction: false)
+    }
+
+    func testNumericParseEmptyIsNil() {
+        XCTAssertNil(NumericTextField.parse(""))
+        XCTAssertNil(NumericTextField.parse("   "))
+    }
+
+    func testNumericParseReadsDecimal() {
+        let sep = Locale.current.decimalSeparator ?? "."
+        XCTAssertEqual(NumericTextField.parse("1"), 1)
+        XCTAssertEqual(NumericTextField.parse("1\(sep)5"), 1.5)
+    }
+
+    func testNumericFormatDoesNotGroup() {
+        let sep = Locale.current.decimalSeparator ?? "."
+        XCTAssertEqual(NumericTextField.format(1), "1")
+        XCTAssertEqual(NumericTextField.format(1.5), "1\(sep)5")
+    }
+
     #if os(iOS)
     @MainActor
     func testStandardKeyboardBehaviorComposes() {

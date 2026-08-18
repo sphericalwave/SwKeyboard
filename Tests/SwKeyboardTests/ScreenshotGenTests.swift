@@ -19,6 +19,10 @@ final class ScreenshotGenTests: XCTestCase {
                     text: .constant("A few lines of sample notes.\nThe field grows to hug its content."),
                     prompt: "Notes")
              })),
+            ("NumericTextField", CGSize(width: 360, height: 80),
+             AnyView(Form {
+                NumericTextField("1", value: .constant(nil))
+             })),
         ]
     }
 
