@@ -27,6 +27,7 @@ defaults.
 
 - `KeyboardDismissal` — app-wide tap-outside-to-dismiss. Install once: `.onAppear { KeyboardDismissal.installTapOutsideDismissal() }`. Unlike a naive tap recognizer, this ignores touches on text inputs, the edit menu/callout bar, and the keyboard itself, avoiding flicker and broken paste
 - `GrowingTextEditor` — multiline input that grows with content, built on `TextField(axis: .vertical)` so the containing Form/ScrollView scrolls to follow the caret natively (replaces the `TextEditor(...).scrollDisabled(true)` + hidden mirror-`Text` hack, which broke caret tracking after a long paste)
+- `NumericTextField` — decimal-pad field bound to `Double?`. Empty shows a placeholder (last committed value). Typed text is the source of truth, so unlike `TextField(value:format:)` the caret stays after the digit instead of jumping to its left
 - `StandardKeyboardBehavior` — app-root `View` extension for scroll-to-dismiss defaults (a container setting that cascades to every descendant ScrollView/List/Form, unlike the per-field `plainKeyboard()` opt-in)
 - `PlainKeyboard`, `DoneKeyboardToolbar` — per-field keyboard opt-ins
 
