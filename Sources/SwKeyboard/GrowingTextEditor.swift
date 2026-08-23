@@ -16,19 +16,30 @@ import SwiftUI
 public struct GrowingTextEditor: View {
     @Binding private var text: String
     private let prompt: String
-    private let lineRange: ClosedRange<Int>
+    private let minLines: Int
 
+    /// - Parameter minLines: the field never renders shorter than this; it has
+    ///   no upper bound, so long text is never truncated.
     public init(text: Binding<String>,
                 prompt: String = "",
-                lines: ClosedRange<Int> = 1...12) {
+                minLines: Int = 1) {
         self._text = text
         self.prompt = prompt
-        self.lineRange = lines
+        self.minLines = minLines
+    }
+
+    /// Legacy range-based initializer. The upper bound is ignored — capping the
+    /// line limit truncated long text instead of scrolling it.
+    @available(*, deprecated, message: "Use minLines: instead; the upper bound is ignored.")
+    public init(text: Binding<String>,
+                prompt: String = "",
+                lines: ClosedRange<Int>) {
+        self.init(text: text, prompt: prompt, minLines: lines.lowerBound)
     }
 
     public var body: some View {
         TextField(prompt, text: $text, axis: .vertical)
-            .lineLimit(lineRange.lowerBound...lineRange.upperBound)
+            .lineLimit(minLines...)
             // Inside a Form/List row, the row proposes a fixed height and the
             // field otherwise renders at that proposal instead of its true
             // content height — fixedSize forces it to hug the actual text.

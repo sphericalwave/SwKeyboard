@@ -5,7 +5,7 @@ import SwiftUI
 final class SwKeyboardTests: XCTestCase {
 
     func testGrowingTextEditorInstantiates() {
-        _ = GrowingTextEditor(text: .constant("hello"), prompt: "Notes", lines: 2...6)
+        _ = GrowingTextEditor(text: .constant("hello"), prompt: "Notes", minLines: 2)
     }
 
     func testPlainKeyboardModifierComposes() {
