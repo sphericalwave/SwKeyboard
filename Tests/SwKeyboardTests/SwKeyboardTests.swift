@@ -6,6 +6,7 @@ final class SwKeyboardTests: XCTestCase {
 
     func testGrowingTextEditorInstantiates() {
         _ = GrowingTextEditor(text: .constant("hello"), prompt: "Notes", minLines: 2)
+        _ = GrowingTextEditor(text: .constant("hello"), prompt: "Notes", border: .blue)
     }
 
     func testPlainKeyboardModifierComposes() {
